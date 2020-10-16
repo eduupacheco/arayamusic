@@ -34,7 +34,7 @@ io.sockets.on('connection', function(socket){
 		if(data == 'change'){
 			playlist.shift()
 		} else {
-			(data.startsWith('https://soundcloud.com/') || link.startsWith('https://m.soundcloud.com/') || link.startsWith('https://www.soundcloud.com/'))? playlist.push(data): '';
+			(data.startsWith('https://soundcloud.com/') || data.startsWith('https://m.soundcloud.com/') || data.startsWith('https://www.soundcloud.com/'))? playlist.push(data): '';
 		}
 
 		io.sockets.emit('new message', playlist)
