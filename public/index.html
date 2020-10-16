@@ -55,16 +55,18 @@
             $.getJSON('./playlist', function (data) {
                 if (data.playlist.length == 1) {
                     widget.load(data.playlist[0], { auto_play: true, show_teaser: false });
-                    widget.play();
+                    widget.bind(SC.Widget.Events.READY, function (eventData) {
+                        widget.play();
+                    });
                 }
             })
         });
 
         function sendTrack(link) {
             if (link.startsWith('https://soundcloud.com/') || link.startsWith('https://m.soundcloud.com/') || link.startsWith('https://www.soundcloud.com/')) {
-                (link.startsWith('https://soundcloud.com/'))? SOCKET.emit('send message', link.replace('https://soundcloud.com/','')): '';
-                (link.startsWith('https://m.soundcloud.com/'))? SOCKET.emit('send message', link.replace('https://m.soundcloud.com/','')): '';
-                (link.startsWith('https://www.soundcloud.com/'))? SOCKET.emit('send message', link.replace('https://www.soundcloud.com/','')): '';
+                (link.startsWith('https://soundcloud.com/')) ? SOCKET.emit('send message', link.replace('https://soundcloud.com/', '')) : '';
+                (link.startsWith('https://m.soundcloud.com/')) ? SOCKET.emit('send message', link.replace('https://m.soundcloud.com/', '')) : '';
+                (link.startsWith('https://www.soundcloud.com/')) ? SOCKET.emit('send message', link.replace('https://www.soundcloud.com/', '')) : '';
 
                 $.getJSON('./playlist', function (data) {
                     setNotificationSuccess('Song added! There are ' + data.playlist.length + ' songs in the list.')
