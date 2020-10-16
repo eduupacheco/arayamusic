@@ -63,7 +63,9 @@
 
         function sendTrack(link) {
             if (link.startsWith('https://soundcloud.com/') || link.startsWith('https://m.soundcloud.com/') || link.startsWith('https://www.soundcloud.com/')) {
-                SOCKET.emit('send message', link)
+                (link.startsWith('https://soundcloud.com/'))? SOCKET.emit('send message', link.replace('https://soundcloud.com/','')): '';
+                (link.startsWith('https://m.soundcloud.com/'))? SOCKET.emit('send message', link.replace('https://m.soundcloud.com/','')): '';
+                (link.startsWith('https://www.soundcloud.com/'))? SOCKET.emit('send message', link.replace('https://www.soundcloud.com/','')): '';
 
                 $.getJSON('./playlist', function (data) {
                     setNotificationSuccess('Song added! There are ' + data.playlist.length + ' songs in the list.')
