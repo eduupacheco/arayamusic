@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Araya Music</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+        integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="./css/toastr.css">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+    <div class="p-5 m-0 d-flex justify-content-center">
+        <input type="url" name="url" id="url">
+        <button id="add-to-playlist">Add</button>
+    </div>
+    <div class="p-5 m-0 d-flex justify-content-center">
+        <h1 id="counter-list">0</h1>
+        <iframe id="player" class="iframe w-100" disabled></iframe>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
+        crossorigin="anonymous"></script>
+
+    <script src="https://w.soundcloud.com/player/api.js"></script>
+    <script src="./js/jquery.js"></script>
+    <script src="./js/toastr.js"></script>
+    <script>
+
+        setCounterListView()
+
+        $.getJSON('./playlist', function (data) {
+            widget.load(data.playlist[0], { auto_play: true, show_teaser: false });
+            widget.play();
+        })
+
+        $('#add-to-playlist').click(function (e) {
+            e.preventDefault();
+            sendTrack($('#url').val())
+        });
+
+        // INIT VARIABLES
+        var SOCKET = io.connect()
+        var iframe = document.querySelector('#player')
+        iframe.src = "https://w.soundcloud.com/player/?url=https://soundcloud.com/audimusrecords/secretcrush"
+        var widget = SC.Widget(iframe)
+
+        SOCKET.on('new message', function (data) {
+            setCounterListView()
+            $.getJSON('./playlist', function (data) {
+                if (data.playlist.length == 1) {
+                    widget.load(data.playlist[0], { auto_play: true, show_teaser: false });
+                    widget.play();
+                }
+            })
+        });
+
+        function sendTrack(link) {
+            if (link.startsWith('https://soundcloud.com/')) {
+                SOCKET.emit('send message', link)
+
+                $.getJSON('./playlist', function (data) {
+                    setNotificationSuccess('Song added! There are ' + data.playlist.length + ' songs in the list.')
+                    if (data.playlist.length == 1) {
+                        widget.load(data.playlist[0], { auto_play: true, show_teaser: false });
+                        widget.play();
+                    }
+                })
+            } else {
+                setNotificationError('Incorrect link.')
+            }
+            $('#url').val('')
+            setCounterListView()
+        }
+
+        function changeTrack() {
+            SOCKET.emit('send message', 'change')
+            setCounterListView()
+            $.getJSON('./playlist', function (data) {
+                if (data.playlist.length == 0) {
+                    setNotificationError('There are no songs in the list. Add the songs you want by entering the link.')
+                } else {
+                    setNotificationSuccess('Next song! There are ' + data.playlist.length + ' songs in the list.')
+                    widget.load(data.playlist[0], { auto_play: true, show_teaser: false });
+                }
+            })
+        }
+
+        widget.bind(SC.Widget.Events.READY, function (eventData) {
+            widget.play();
+        });
+
+        widget.bind(SC.Widget.Events.FINISH, function (eventData) {
+            changeTrack()
+        });
+
+        function setNotificationSuccess(str) {
+            toastr.options.closeButton = true;
+            toastr.options.positionClass = 'toast-bottom-right'
+            toastr.success(str, '<i>Success</i>')
+        }
+
+        function setNotificationError(str) {
+            toastr.options.closeButton = true;
+            toastr.options.positionClass = 'toast-bottom-right'
+            toastr.error(str, '<i>Error</i>')
+        }
+
+        function setCounterListView() {
+            $.getJSON('./playlist', function (data) {
+                $('#counter-list').text(data.playlist.length);
+            })
+        }
+
+        function getOnlineUsers() {
+            $.getJSON('./users', function (data) {
+                $('#online-users').html(data.users);
+            })
+        }
+    </script>
+</body>
+
+</html>

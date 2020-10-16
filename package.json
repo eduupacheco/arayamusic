@@ -1,0 +1,16 @@
+{
+  "name": "Araya",
+  "version": "1.0.0",
+  "description": "",
+  "main": "public",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "author": "Eduardo Pacheco",
+  "license": "",
+  "dependencies": {
+    "balanced-match": "^1.0.0",
+    "express": "*",
+    "socket.io": "*"
+  }
+}
