@@ -32,6 +32,11 @@
     <script src="./js/jquery.js"></script>
     <script src="./js/toastr.js"></script>
     <script>
+        // INIT VARIABLES
+        var SOCKET = io.connect()
+        var iframe = document.querySelector('#player')
+        iframe.src = 'https://w.soundcloud.com/player/?url=https://soundcloud.com/audimusrecords/secretcrush&show_teaser=false'
+        var widget = SC.Widget(iframe)
 
         setCounterListView()
 
@@ -44,12 +49,6 @@
             e.preventDefault();
             sendTrack($('#url').val())
         });
-
-        // INIT VARIABLES
-        var SOCKET = io.connect()
-        var iframe = document.querySelector('#player')
-        iframe.src = "https://w.soundcloud.com/player/?url=https://soundcloud.com/audimusrecords/secretcrush"
-        var widget = SC.Widget(iframe)
 
         SOCKET.on('new message', function (data) {
             setCounterListView()
