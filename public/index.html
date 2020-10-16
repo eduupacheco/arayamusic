@@ -62,7 +62,7 @@
         });
 
         function sendTrack(link) {
-            if (link.startsWith('https://soundcloud.com/')) {
+            if (link.startsWith('https://soundcloud.com/') || link.startsWith('https://m.soundcloud.com/') || link.startsWith('https://www.soundcloud.com/')) {
                 SOCKET.emit('send message', link)
 
                 $.getJSON('./playlist', function (data) {
