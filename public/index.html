@@ -12,121 +12,40 @@
 </head>
 
 <body>
-    <div class="p-5 m-0 d-flex justify-content-center">
-        <input type="url" name="url" id="url">
-        <button id="add-to-playlist">Add</button>
+    <div>
+        <div id="player-div" style="display: none">
+            <iframe id="player" class="w-100" scrolling="no" frameborder="no"
+                src="https://soundcloud.com/tuvaliofficial/feels-so-good&show_teaser=false&color=#1a1614"></iframe>
+        </div>
+        <div class="p-5 m-0 d-flex justify-content-center">
+            
+        </div>
+        <div>
+            <h1>Hay <span id="counter-list">0</span> canciones en la playlist.</h1>
+            <input id="volume" type="range" value="100" min="0" max="100">
+        </div>
+        <div>
+            <p>Si se encuentra en dispositivo Android o iOS, por favor dale al play del reproductor para iniciar la sincronización SharedParty. </p>
+        </div>
+        <div>
+            <button id="join">Unirme</button>
+            <input type="url" name="url" id="url">
+            <button id="add">Add</button>
+            <button id="btn-play">Play</button>
+            <button id="btn-pause">Pause</button>
+            <button id="btn-skip">Skip</button>
+        </div>
     </div>
-    <div class="p-5 m-0 d-flex justify-content-center">
-        <h1 id="counter-list">0</h1>
-        <iframe class="iframe" width="100%" height="465" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https://soundcloud.com/tuvaliofficial/titans&amp;auto_play=true&amp;buying=true&amp;liking=true&amp;download=true&amp;sharing=true&amp;show_artwork=true&amp;show_comments=true&amp;show_playcount=true&amp;show_user=true&amp;hide_related=false&amp;visual=true&amp;start_track=0&amp;callback=true&show_teaser=false"></iframe>
-    </div>
-
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
         crossorigin="anonymous"></script>
-
-    <script src="https://w.soundcloud.com/player/api.js"></script>
-    <script src="./js/jquery.js"></script>
+    <script type="text/javascript" src="./js/api.js"></script>
+    <script type="text/javascript" src="./js/jquery.js"></script>
     <script src="./js/toastr.js"></script>
-    <script>
-        // INIT VARIABLES
-        var SOCKET = io.connect()
-        var iframe = document.querySelector('#player')
-        var widget = SC.Widget(iframe)
-
-        $(document).ready(function () {
-            setCounterListView()
-
-            $.getJSON('./playlist', function (data) {
-                if (data.playlist.length > 0) {
-                    widget.load(data.playlist[0], { auto_play: true, show_teaser: false });
-                    widget.bind(SC.Widget.Events.READY, function (eventData) {
-                        widget.play();
-                    });
-                }
-            })
-
-            $('#add-to-playlist').click(function (e) {
-                e.preventDefault();
-                sendTrack($('#url').val())
-            });
-
-            $('#btn-join').click(function (e) {
-                e.preventDefault();
-                widget.play()
-            });
-
-            widget.bind(SC.Widget.Events.FINISH, function (eventData) {
-                changeTrack()
-            });
-
-            SOCKET.on('new message', function (data) {
-                setCounterListView()
-                $.getJSON('./playlist', function (data) {
-                    if (data.playlist.length == 1) {
-                        widget.load(data.playlist[0], { auto_play: true, show_teaser: false });
-                        widget.bind(SC.Widget.Events.READY, function (eventData) {
-                            widget.play();
-                        });
-                    }
-                })
-            });
-        });
-
-        function sendTrack(link) {
-            if (link.startsWith('https://soundcloud.com/') || link.startsWith('https://m.soundcloud.com/') || link.startsWith('https://www.soundcloud.com/')) {
-                (link.startsWith('https://soundcloud.com/')) ? SOCKET.emit('send message', link.replace('https://soundcloud.com/', '')) : '';
-                (link.startsWith('https://m.soundcloud.com/')) ? SOCKET.emit('send message', link.replace('https://m.soundcloud.com/', '')) : '';
-                (link.startsWith('https://www.soundcloud.com/')) ? SOCKET.emit('send message', link.replace('https://www.soundcloud.com/', '')) : '';
-
-                $.getJSON('./playlist', function (data) {
-                    setNotificationSuccess('Song added! There are ' + data.playlist.length + ' songs in the list.')
-                    if (data.playlist.length == 1) {
-                        widget.load(data.playlist[0], { auto_play: true, show_teaser: false });
-                        widget.play();
-                    }
-                })
-            } else {
-                setNotificationError('Incorrect link.')
-            }
-            $('#url').val('')
-            setCounterListView()
-        }
-
-        function changeTrack() {
-            SOCKET.emit('send message', 'change')
-            setCounterListView()
-            $.getJSON('./playlist', function (data) {
-                if (data.playlist.length == 0) {
-                    setNotificationError('There are no songs in the list. Add the songs you want by entering the link.')
-                } else {
-                    setNotificationSuccess('Next song! There are ' + data.playlist.length + ' songs in the list.')
-                    widget.load(data.playlist[0], { auto_play: true, show_teaser: false });
-                }
-            })
-        }
-
-        function setNotificationSuccess(str) {
-            toastr.options.closeButton = true;
-            toastr.options.positionClass = 'toast-bottom-right'
-            toastr.success(str, '<i>Success</i>')
-        }
-
-        function setNotificationError(str) {
-            toastr.options.closeButton = true;
-            toastr.options.positionClass = 'toast-bottom-right'
-            toastr.error(str, '<i>Error</i>')
-        }
-
-        function setCounterListView() {
-            $.getJSON('./playlist', function (data) {
-                $('#counter-list').text(data.playlist.length);
-            })
-        }
-    </script>
+    <script src="./js/main.js"></script>
 </body>
 
 </html>
