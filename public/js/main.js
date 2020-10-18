@@ -1,13 +1,33 @@
 
-var widgetUrl = 'https://soundcloud.com/tuvaliofficial/feels-so-good&show_teaser=false&color=#1a1614';
+var widgetUrl = 'https%3A//api.soundcloud.com/tracks/911327212&color=%230a0a0a&auto_play=true&show_teaser=false';
 
 var SOCKET = io.connect()
 var iframe = document.getElementById('player');
 iframe.src = 'https://w.soundcloud.com/player/?url=' + widgetUrl;
 var widget = SC.Widget(iframe);
 var joined = false;
+var slider = document.getElementById('song-progress');
+var songProgress = null;
+var paused = false;
+widget.getDuration(function(duration){
+    songProgress = noUiSlider.create(slider, {
+        start: [0],
+        range: {
+            'min': [0],
+            'max': [duration]
+        }
+    });
+    $('.current-track__progress__finish').text(msToMinutes(duration));
+});
+
 
 setCounterListView()
+
+widget.bind(SC.Widget.Events.PLAY_PROGRESS, function (e) {
+    $('.current-track__progress__start').text(msToMinutes(e.currentPosition));
+    widget.getDuration()
+    songProgress.set(e.currentPosition)
+});
 
 widget.bind(SC.Widget.Events.FINISH, function (e) {
     if (joined) {
@@ -34,13 +54,24 @@ SOCKET.on('play', function (data) {
     if (joined) {
         widget.seekTo(data + 100)
         widget.play()
+        $('#btn-play').addClass('disabled');
+        $('#btn-pause').removeClass('disabled');
+        paused = false;
     }
+    widget.bind(SC.Widget.Events.PLAY_PROGRESS, function (e) {
+        $('.current-track__progress__start').text(msToMinutes(e.currentPosition));
+        widget.getDuration();
+        songProgress.set(e.currentPosition)
+    });
 });
 
 SOCKET.on('pause', function (data) {
     if (joined) {
         widget.pause()
         widget.seekTo(data)
+        $('#btn-play').removeClass('disabled');
+        $('#btn-pause').addClass('disabled');
+        paused = true;
     }
 });
 
@@ -74,18 +105,28 @@ $('#add').click(function (e) {
 });
 
 $('#btn-play').click(function (e) {
-    e.preventDefault();
-    widget.bind(SC.Widget.Events.PLAY_PROGRESS, function (e) {
-        SOCKET.emit('play', e.currentPosition)
-        widget.unbind(SC.Widget.Events.PLAY_PROGRESS)
-    });
+    if(paused){
+        e.preventDefault();
+        widget.bind(SC.Widget.Events.PLAY_PROGRESS, function (e) {
+            SOCKET.emit('play', e.currentPosition)
+            widget.unbind(SC.Widget.Events.PLAY_PROGRESS)
+        });
+        $(this).addClass('disabled');
+        $('#btn-pause').removeClass('disabled');
+        paused = false;
+    }
 });
 
 $('#btn-pause').click(function (e) {
-    e.preventDefault();
-    widget.bind(SC.Widget.Events.PLAY_PROGRESS, function (e) {
-        SOCKET.emit('pause', e.currentPosition)
-    });
+    if(!paused){
+        e.preventDefault();
+        widget.bind(SC.Widget.Events.PLAY_PROGRESS, function (e) {
+            SOCKET.emit('pause', e.currentPosition)
+        });
+        $(this).addClass('disabled');
+        $('#btn-play').removeClass('disabled');
+        paused = true;
+    }
 });
 
 $('#btn-skip').click(function (e) {
@@ -94,7 +135,6 @@ $('#btn-skip').click(function (e) {
 });
 
 $('#volume').change(function (e) {
-    e.preventDefault();
     setVol($('#volume').val())
 });
 
@@ -104,8 +144,7 @@ $('#join').click(function (e) {
     $.getJSON('./playlist', function (data) {
         widget.load(data.playlist[0], { auto_play: true, show_teaser: false });
     })
-    $('#player-div').show();
-    $(this).hide();
+    $('#join-div').hide();
     widget.bind(SC.Widget.Events.READY, function (eventData) {
         widget.play();
     });
@@ -143,5 +182,19 @@ function setNotificationError(str) {
 function setCounterListView() {
     $.getJSON('./playlist', function (data) {
         $('#counter-list').text(data.playlist.length);
+        var trackcomponents = ''
+        var counter = 0
+        data.playlist.forEach(element => {
+            counter++
+            trackcomponents += `<section class="playlist"><a href="#"><i class="ion-ios-musical-notes"></i>Track ${counter}</a></section>`
+        });
+        $('.playlist-div').html(trackcomponents);
     })
+}
+
+function msToMinutes(val) {
+    var mm = moment.duration(val);
+    var hour = (mm.hours() == 0)? '':mm.hours()+':';
+    var seconds = (mm.seconds() < 10)? '0'+mm.seconds():mm.seconds();
+    return  hour + mm.minutes() + ':' + seconds
 }

@@ -1,0 +1,511 @@
+body, html {
+    background: #181818;
+    font-family: 'Roboto', sans-serif;
+    height: 100vh;
+    width: 100%;
+  }
+  
+  body a {
+    color: #aaaaaa;
+  }
+  
+  body a:hover {
+    color: #c8c8c8;
+  }
+  
+  .header {
+    background: #282828;
+    padding: 10px;
+    color: #aaaaaa;
+    border-bottom: 1px solid #181818;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    height: max-content;
+  }
+  
+  .header .search {
+    width: 80%; 
+    margin-right: 1%;
+  }
+  
+  .header .search input {
+    border-radius: 15px;
+    border: none;
+    background: white;
+    color: #181818;
+    outline: none;
+    background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/7022/ios-search.svg);
+    background-repeat: no-repeat;
+    background-size: 20px;
+    background-position: 5px;
+    padding: 3px;
+    padding-left: 30px;
+  }
+  
+  .content {
+    display: flex;
+    flex-flow: row wrap;
+    height: 85%;
+  }
+  
+  .content__left {
+    width: 15%;
+  }
+  
+  .content__right {
+    width: 85%;
+    margin: 0px;
+    height: 100%;
+  }
+  
+  @media (max-width: 1400px) {
+    .content__left {
+      width: 20%;
+    }
+    .content__right {
+      width: 80%;
+    }
+  }
+  @media (max-width: 768px) {
+    .content__left {
+      width: 100%;
+    }
+    .content__right {
+      width: 100%;
+    }
+  }
+  
+  .navigation {
+    padding: 15px;
+    background: #282828;
+    color: #aaaaaa;
+    overflow-y: scroll;
+  }
+  .navigation__list {
+    display: flex;
+    flex-flow: column wrap;
+    margin-bottom: 15px;
+  }
+  .navigation__list__header:after {
+    font-family: "Ionicons";
+    content: "\f123";
+  }
+  .navigation__list .active:after {
+    font-family: "Ionicons";
+    content: "\f126";
+  }
+  .navigation__list__item {
+    color: #aaaaaa;
+    padding: 5px 0;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+  }
+  .navigation__list__item:hover {
+    color: white;
+    text-decoration: none;
+    border-right: 3px solid #1ed760;
+  }
+  .navigation__list__item i {
+    width: 25px;
+    display: block;
+  }
+  
+  @media (max-width: 768px) {
+    .navigation {
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: space-around;
+    }
+    .navigation__list {
+      margin-bottom: 0;
+      width: calc( 100% / 3 );
+      text-align: center;
+    }
+    .navigation__list__item {
+      width: 100%;
+      text-align: center;
+    }
+    .navigation__list__item i {
+      display: none;
+    }
+    .navigation__list__item span {
+      margin: 0 auto;
+    }
+    .navigation__list__item:hover {
+      border: none;
+    }
+  }
+  .playlist {
+    padding: 15px;
+    background: #282828;
+    border-top: 1px solid #181818;
+    border-bottom: 1px solid #181818;
+  }
+  .playlist:hover {
+    background: #424242;
+  }
+  .playlist:hover a {
+    color: white;
+  }
+  .playlist a {
+    color: #aaaaaa;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+  }
+  .playlist a:hover {
+    text-decoration: none;
+  }
+  .playlist a i {
+    font-size: 24px;
+    color: white;
+    margin-right: 15px;
+  }
+  
+  .playing {
+    background: #282828;
+    border-bottom: 1px solid #181818;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+  }
+  .playing__art img {
+    width: 50px;
+    height: 50px;
+  }
+  .playing__song {
+    color: #aaaaaa;
+    padding-left: 15px;
+    display: flex;
+    flex-flow: column wrap;
+  }
+  .playing__song a {
+    color: #aaaaaa;
+  }
+  .playing__song a:hover {
+    color: white;
+    cursor: pointer;
+  }
+  .playing__add {
+    margin-left: auto;
+    padding-right: 15px;
+    color: #aaaaaa;
+  }
+  
+  @media (max-width: 768px) {
+    .playing {
+      border-top: 1px solid #181818;
+    }
+  }
+  .current-track {
+    background: #282828;
+    padding: 5px 15px;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+  }
+  .current-track__actions {
+    width: 5%;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .current-track__actions a {
+    font-size: 24px;
+    color: #c8c8c8;
+  }
+  .current-track__actions a:hover {
+    color: white;
+    cursor: pointer;
+  }
+  .current-track__actions .play {
+    font-size: 36px;
+  }
+  .current-track__actions .play.disabled {
+    color: rgb(29, 29, 29);
+  }
+  .current-track__actions .pause.disabled {
+    color: rgb(29, 29, 29);
+  }
+  .current-track__progress {
+    width: 70%;
+    padding: 0 30px;
+    color: #aaaaaa;
+    font-size: 11px;
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .current-track__progress__bar {
+    width: 100%;
+    padding: 0 15px;
+  }
+  .current-track__progress__bar .noUi-target {
+    border: none;
+    height: 4px;
+  }
+  .current-track__progress__bar .noUi-base {
+    background: #1ed760;
+  }
+  .current-track__progress__bar .noUi-origin {
+    background: #5e5e5e;
+  }
+  .current-track__progress__bar .noUi-handle {
+    background: #c8c8c8;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    box-shadow: none;
+    border: none;
+    left: 0;
+    display: none;
+  }
+  .current-track__progress__bar .noUi-handle:before, .current-track__progress__bar .noUi-handle:after {
+    background: none;
+  }
+  .current-track__progress:hover .noUi-handle {
+    display: block;
+  }
+  .current-track__options {
+    width: 25%;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+  }
+  .current-track__options .lyrics {
+    font-size: 11px;
+    text-transform: uppercase;
+    width: 15%;
+    padding: 0 15px 0 0;
+  }
+  .current-track__options .controls {
+    width: 85%;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+  }
+  .current-track__options .controls .devices:hover {
+    text-decoration: none;
+  }
+  .current-track__options .controls .devices i {
+    margin-right: 5px;
+  }
+  .current-track__options .controls .devices span {
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+  .current-track__options .controls .volume {
+    width: 25%;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+  }
+  .current-track__options .controls .volume i {
+    width: 20px;
+    color: #aaaaaa;
+  }
+  .current-track__options .controls .volume #volume {
+    width: calc( 80% - 20px );
+    border: none;
+    height: 4px;
+  }
+  .current-track__options .controls .volume #volume .noUi-base {
+    background: #c8c8c8;
+  }
+  .current-track__options .controls .volume #volume .noUi-origin {
+    background: #5e5e5e;
+  }
+  .current-track__options .controls .volume #volume .noUi-handle {
+    background: #c8c8c8;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    box-shadow: none;
+    border: none;
+    left: 0;
+    display: none;
+  }
+  .current-track__options .controls .volume #volume .noUi-handle:before, .current-track__options .controls .volume #volume .noUi-handle:after {
+    background: none;
+  }
+  .current-track__options .controls .volume #volume:hover .noUi-handle {
+    display: block;
+  }
+  @media (max-width: 1400px) {
+    .current-track__actions {
+      width: 10%;
+    }
+    .current-track__progress {
+      width: 50%;
+    }
+    .current-track__options {
+      width: 40%;
+    }
+  }
+  @media (max-width: 980px) {
+    .current-track__actions {
+      width: 10%;
+    }
+    .current-track__progress {
+      width: 40%;
+    }
+    .current-track__options {
+      width: 50%;
+    }
+  }
+  @media (max-width: 768px) {
+    .current-track__actions {
+      width: 25%;
+    }
+    .current-track__progress {
+      width: 75%;
+    }
+    .current-track__options {
+      width: 100%;
+    }
+  }
+  @media (max-width: 480px) {
+    .current-track__actions {
+      width: 100%;
+      justify-content: space-around;
+      padding: 5px 0;
+    }
+    .current-track__progress {
+      width: 100%;
+      padding: 5px 0;
+    }
+    .current-track__options {
+      width: 100%;
+      padding: 5px 0;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .current-track__action {
+      padding-top: 15px;
+    }
+  }
+  .artist__header {
+    height: 100%;
+    border-bottom: 1px solid #282828;
+    position: relative;
+    background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/7022/spotify_img_bground.png);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    z-index: 1;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
+  }
+  .artist__header:before {
+    content: ' ';
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 0.15;
+    background-image: url(https://planetatenerife.com/wp-content/uploads/2019/08/Guia-de-campings-en-Tenerife.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: top;
+  }
+  
+  @media (max-width: 650px) {
+    .header .window__actions {
+      width: 15%;
+    }
+    .header .page-flows {
+      width: 20%;
+      margin: 0;
+    }
+    .header .search {
+      width: 65%;
+      margin: 0;
+    }
+    .header .search input {
+      width: 100%;
+      background-size: 7%;
+    }
+  }
+  
+  .h1 {
+    font-size: 36px;
+  }
+  
+  .h2, .navigation__list__header {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+  }
+  
+  .red {
+    color: #fc615c;
+  }
+  .red:hover {
+    color: #fb302a;
+  }
+  
+  .yellow {
+    color: #fdbe41;
+  }
+  .yellow:hover {
+    color: #fcad0f;
+  }
+  
+  .green {
+    color: #34c94a;
+  }
+  .green:hover {
+    color: #2aa03b;
+  }
+  
+  button {
+    border-radius: 20px;
+    border: none;
+    padding: 5px 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 11px;
+    outline: none;
+  }
+  button:hover {
+    cursor: pointer;
+  }
+  
+  .button-dark {
+    background: #1ed760;
+    color: white;
+    border: 1px solid #1ed760;
+  }
+  .button-dark:hover {
+    background: #43e57d;
+  }
+  
+  .button-light {
+    background: none;
+    color: #c8c8c8;
+    border: 1px solid #c8c8c8;
+  }
+  .button-light:hover {
+    border-color: white;
+    color: white;
+  }
+  
+  .section-title {
+    text-transform: uppercase;
+    color: #aaaaaa;
+    letter-spacing: 1.25px;
+    font-size: 13.2px;
+    margin-bottom: 10px;
+  }
