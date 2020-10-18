@@ -9,17 +9,6 @@ var joined = false;
 var slider = document.getElementById('song-progress');
 var songProgress = null;
 var paused = false;
-widget.getDuration(function(duration){
-    songProgress = noUiSlider.create(slider, {
-        start: [0],
-        range: {
-            'min': [0],
-            'max': [duration]
-        }
-    });
-    $('.current-track__progress__finish').text(msToMinutes(duration));
-});
-
 
 setCounterListView()
 
@@ -144,6 +133,16 @@ $('#join').click(function (e) {
     joined = true
     $.getJSON('./playlist', function (data) {
         widget.load(data.playlist[0], { auto_play: true, show_teaser: false });
+        widget.getDuration(function(duration){
+            songProgress = noUiSlider.create(slider, {
+                start: [0],
+                range: {
+                    'min': [0],
+                    'max': [duration]
+                }
+            });
+            $('.current-track__progress__finish').text(msToMinutes(duration));
+        });
     })
     $('#join-div').hide();
     widget.bind(SC.Widget.Events.READY, function (eventData) {
