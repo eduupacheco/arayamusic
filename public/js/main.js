@@ -94,6 +94,7 @@ SOCKET.on('finish', function (data) {
                 widget.bind(SC.Widget.Events.READY, function (eventData) {
                     widget.play();
                 });
+                setVol($('#volume').val())
             }
         })
     }
